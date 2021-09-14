@@ -20,8 +20,11 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
-        theme: ThemeData.dark()
-            .copyWith(visualDensity: VisualDensity.adaptivePlatformDensity),
+        theme: ThemeData.dark().copyWith(
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+            buttonColor: Colors.cyan,
+            buttonTheme: ButtonThemeData(
+                focusColor: Colors.cyan, buttonColor: Colors.cyan)),
         home: HomePage(),
         routes: {
           NoteEditorScreen.routeName: (ctx) => NoteEditorScreen(),

@@ -94,14 +94,39 @@ class _NoteEditorScreenState extends State<NoteEditorScreen>
               ? Scaffold(
                   key: _scaffoldKey,
                   appBar: AppBar(
-                    title: Text(
-                      snap.data!.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  floatingActionButton: FloatingActionButton.extended(
-                      onPressed: () {
+                    actions: [
+                      IconButton(
+                          tooltip: "Save",
+                          onPressed: () async {
+                            var txt = await controller.getText();
+                            // if (txt.contains('src=\"data:')) {
+                            //   txt =
+                            //       '<text removed due to base-64 data, displaying the text could cause the app to crash>';
+                            // }
+                            setState(() {
+                              result = txt;
+                            });
+
+                            await noteData.saveNoteContent(result,
+                                title.isEmpty ? snap.data!.title : title, id);
+
+                            setState(() {
+                              saved = true;
+                            });
+                            Utilities.showSnackbar(
+                                context, "Saved note", Colors.green);
+                          },
+                          icon: Icon(Icons.save)),
+                      IconButton(
+                          tooltip: "Leave",
+                          onPressed: () {
+                            Navigator.pushReplacement(context,
+                                MaterialPageRoute(builder: (c) => HomePage()));
+                          },
+                          icon: Icon(Icons.done))
+                    ],
+                    title: GestureDetector(
+                      onTap: () {
                         showDialog(
                             context: context,
                             builder: (ctx) {
@@ -150,14 +175,27 @@ class _NoteEditorScreenState extends State<NoteEditorScreen>
                               );
                             });
                       },
-                      label: Text("Change Title")),
+                      child: Row(
+                        children: [
+                          Text(
+                            snap.data!.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Icon(Icons.edit),
+                        ],
+                      ),
+                    ),
+                  ),
                   body: SingleChildScrollView(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         HtmlEditor(
                           controller: controller,
-                          key: UniqueKey(),
                           htmlEditorOptions: HtmlEditorOptions(
                             hint: 'Your text here...',
                             initialText: snap.data!.content == ""
@@ -290,147 +328,38 @@ class _NoteEditorScreenState extends State<NoteEditorScreen>
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                TextButton(
+                                TextButton.icon(
                                   style: TextButton.styleFrom(
                                       backgroundColor: Colors.blueGrey),
                                   onPressed: () {
                                     controller.undo();
                                   },
-                                  child: Text('Undo',
+                                  icon: Icon(
+                                    Icons.undo,
+                                    color: Colors.white,
+                                  ),
+                                  label: Text('Undo',
                                       style: TextStyle(color: Colors.white)),
                                 ),
                                 SizedBox(
                                   width: 16,
                                 ),
-                                TextButton(
+                                TextButton.icon(
+                                  icon: Icon(
+                                    Icons.redo,
+                                    color: Colors.white,
+                                  ),
                                   style: TextButton.styleFrom(
                                       backgroundColor: Colors.blueGrey),
                                   onPressed: () {
                                     controller.clear();
                                   },
-                                  child: Text('Reset',
+                                  label: Text('Reset',
                                       style: TextStyle(color: Colors.white)),
                                 ),
                                 SizedBox(
                                   width: 16,
                                 ),
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                      backgroundColor:
-                                          Theme.of(context).accentColor),
-                                  onPressed: () async {
-                                    var txt = await controller.getText();
-                                    if (txt.contains('src=\"data:')) {
-                                      txt =
-                                          '<text removed due to base-64 data, displaying the text could cause the app to crash>';
-                                    }
-                                    setState(() {
-                                      result = txt;
-                                    });
-
-                                    await noteData.saveNoteContent(
-                                        result,
-                                        title.isEmpty
-                                            ? snap.data!.title
-                                            : title,
-                                        id);
-
-                                    setState(() {
-                                      saved = true;
-                                    });
-                                    Utilities.showSnackbar(
-                                        context, "Saved note", Colors.green);
-                                  },
-                                  child: Text(
-                                    'Save Note',
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 16,
-                                ),
-                                TextButton(
-                                    style: TextButton.styleFrom(
-                                        backgroundColor:
-                                            Theme.of(context).accentColor),
-                                    onPressed: () async {
-                                      Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (c) => HomePage()));
-                                      //       : showDialog(
-                                      //           context: context,
-                                      //           builder: (c) {
-                                      //             return AlertDialog(
-                                      //               title: Text(
-                                      //                 "Save changes?",
-                                      //                 style: TextStyle(
-                                      //                     fontFamily: "Avenir"),
-                                      //               ),
-                                      //               content: Text("Save?"),
-                                      //               actions: [
-                                      //                 TextButton(
-                                      //                     onPressed: () async {
-                                      //                       var txt =
-                                      //                           await controller
-                                      //                               .getText();
-                                      //                       if (txt.contains(
-                                      //                           'src=\"data:')) {
-                                      //                         txt =
-                                      //                             '<text removed due to base-64 data, displaying the text could cause the app to crash>';
-                                      //                       }
-                                      //                       setState(() {
-                                      //                         result = txt;
-                                      //                       });
-
-                                      //                       await noteData
-                                      //                           .saveNoteContent(
-                                      //                               result,
-                                      //                               title.isEmpty
-                                      //                                   ? snap.data!
-                                      //                                       .title
-                                      //                                   : title,
-                                      //                               id);
-
-                                      //                       setState(() {});
-                                      //                       Utilities.showSnackbar(
-                                      //                           context,
-                                      //                           "Saved note",
-                                      //                           Colors.green);
-                                      //                       Navigator.pushReplacement(
-                                      //                           context,
-                                      //                           MaterialPageRoute(
-                                      //                               builder: (c) =>
-                                      //                                   HomePage()));
-                                      //                     },
-                                      //                     child: Text(
-                                      //                       "Save",
-                                      //                       style: TextStyle(
-                                      //                           fontFamily:
-                                      //                               "Avenir"),
-                                      //                     )),
-                                      //                 TextButton(
-                                      //                     onPressed: () {
-                                      //                       Navigator.pushReplacement(
-                                      //                           context,
-                                      //                           MaterialPageRoute(
-                                      //                               builder: (c) =>
-                                      //                                   HomePage()));
-                                      //                     },
-                                      //                     child: Text(
-                                      //                       "No",
-                                      //                       style: TextStyle(
-                                      //                           fontFamily:
-                                      //                               "Avenir"),
-                                      //                     ))
-                                      //               ],
-                                      //             );
-                                      //           });
-                                    },
-                                    child: Text(
-                                      'Done',
-                                      style: TextStyle(color: Colors.black),
-                                    )),
                               ],
                             ),
                           ),

@@ -224,7 +224,7 @@ class _HomePageState extends State<HomePage>
                                             e.gradientColorIndex;
                                         var gradientColor = GradientTemplate
                                             .gradientTemplate[
-                                                gradientColorIndex]
+                                                e.gradientColorIndex]
                                             .colors;
                                         return DelayedAnimation(
                                             delay: delayedAmount,
@@ -339,7 +339,7 @@ class _HomePageState extends State<HomePage>
     var id = notes.length.toString();
     Note createdNote = Note(
       title: title,
-      content: "<h1>New Note</h1>",
+      content: "<h1>$title, ${DateFormat.yMEd().format(DateTime.now())}</h1>",
       createdAt: DateFormat.yMEd().format(DateTime.now()),
       gradientColorIndex: Random().nextInt(5),
       id: getRandomString(10),

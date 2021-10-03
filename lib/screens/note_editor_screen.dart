@@ -105,6 +105,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen>
                             // }
                             setState(() {
                               result = txt;
+                              saved = true;
                             });
 
                             await noteData.saveNoteContent(result,
